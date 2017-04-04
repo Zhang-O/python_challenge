@@ -20,15 +20,13 @@ with open('ocr','r') as f:
 #way two
 with open('ocr','r') as f:
     content = f.read()
-    bytes = set(content) # 用集合 可以迅速地找出构成元素
+    bytes = set(content) # 用集合 可以迅速地找出构成元素  里面包含换行符
     stat_dict = {} # 每个字符串的个数 组成字典
-    result = '' #最后的字符串拼接起来
-    for char in bytes:
-        stat_dict[char] = 0
     for char in content:
-        stat_dict[char] +=1
-    for char in stat_dict:
-        result += char if stat_dict[char] == 1 else ''
+        stat_dict[char] = stat_dict.get(char,0) + 1
+    stat_dict.pop('\n')  # 需要删除换行符
+    avgOC = len(content)//len(stat_dict) # 理解什么是 rare
+    result = ''.join([c for c in stat_dict if stat_dict[c] < avgOC ])
     print(result)
 
 
