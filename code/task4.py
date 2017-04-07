@@ -18,6 +18,6 @@ with open('task4.txt', 'r',closefd=True) as f:
 # way two
 with open('task4.txt', 'r',closefd=True) as f:
     content = f.read()
-    # 生成一个list ，元素为group
+    # 生成一个list ，若只有一个group 元素为 字符串，若有多个group 元素为 tuple
     regExp = re.findall(r'[^A-Z]+[A-Z]{3}([a-z]{1})[A-Z]{3}[^A-Z]+', content)
     print(''.join(regExp))
