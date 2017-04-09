@@ -1,23 +1,52 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import re
 
-# way one
-with open('task4.txt', 'r',closefd=True) as f:
-    # content = f.read()
-    # print(f.read())   #打印结果为 空   ，因为 第二次read  会在第一次read 的结束处 开始
-    # regExp = re.search(r'[^A-Z]+([A-Z]{3})([a-z]{1})([A-Z]{3})[^A-Z]+',content)
-    # print(regExp.groups())
-    str_arr = f.readlines()
-    result = []
-    for i in str_arr:
-        regExp = re.search(r'[^A-Z]+([A-Z]{3})([a-z]{1})([A-Z]{3})[^A-Z]+', i)
-        result.append(regExp.group(2)) if regExp else ''
-    print(''.join(result))
+import urllib.request as ur
+import re, time, socket, urllib.error
 
-# way two
-with open('task4.txt', 'r',closefd=True) as f:
-    content = f.read()
-    # 生成一个list ，若只有一个group 元素为 字符串，若有多个group 元素为 tuple
-    regExp = re.findall(r'[^A-Z]+[A-Z]{3}([a-z]{1})[A-Z]{3}[^A-Z]+', content)
-    print(''.join(regExp))
+timeout = 20
+socket.setdefaulttimeout(timeout)
+
+baseUrl = 'http://www.pythonchallenge.com/pc/def/linkedlist.php?nothing='
+URL = []
+ddd = '12345'
+i = 1
+def openUrl(num):
+    try:
+        with ur.urlopen(baseUrl+num) as f:
+            data = f.read()
+            if re.search(r'(\d+)', data.decode('utf-8')):
+                nothing = re.search(r'(\d+)', data.decode('utf-8')).group(0)
+                URL.append(nothing)
+                global ddd
+                ddd = nothing
+                print(ddd)
+                return True
+            else:
+                print('结束')
+                return False
+    except UnicodeDecodeError as e:
+        print('-----UnicodeDecodeError url:', num)
+    except urllib.error.URLError as e:
+        print("-----urlError url:", num)
+    except socket.timeout as e:
+        # openUrl(num)
+        print("-----socket timout:", num)
+
+
+while openUrl(ddd):
+    time.sleep(10)
+    print('第%s次链接'%(i,))
+    i += 1
+
+
+# 爬的过程中 有一些小 手段 ，需要 调整 手段，具体的是到 结束的页面去看提示
+# 爬的过程中 经常会出新 timeout 错误 ，可以写一个处理错误的函数，也可以把 后面的结果作为起点赋值给ddd
+# 最后的答案是 peak.html
+
+
+
+
+
+
+

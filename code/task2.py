@@ -1,34 +1,42 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import re
 
-#  string 已经没有maketrans方法了  maketrans成了str的静态方法  版本变得太快
-# from string import maketrans
+# way one
+with open('ocr', 'r') as f:
+    content = f.read()
+    bytes = []  # 文档中有哪些字符串
+    stat_dict = {}  # 每个字符串的个数 组成字典
+    result = ''  # 最后的字符串拼接起来
+    for s in content:
+        bytes.append(s) if s not in bytes else ''
+    for char in bytes:
+        stat_dict[char] = 0
+    for char in content:
+        stat_dict[char] += 1
+    for char in stat_dict:
+        result += char if stat_dict[char] == 1 else ''
+    print(result)
 
-my_str = 'g fmnc wms bgblr rpylqjyrc gr zw fylb. rfyrq ufyr amknsrcpq ypc dmp. bmgle gr gl zw fylb gq glcddgagclr ylb\
- rfyr q ufw rfgq rcvr gq qm jmle. sqgle qrpgle.kyicrpylq() gq pcamkkclbcb. lmu ynnjw ml rfc spj.'
-alphabet_dict = {1:"a",2:"b",3:"c",4:"d",5:"e",6:"f",7:"g",8:"h",9:"i",10:"j",11:"k",12:"l",13:"m",14:"n",15:"o",
-				 16:"p",17:"q", 18: "r",19:"s",20:"t",21:"u",22:"v",23:"w",24:"x",25:"y",26:"z"}
-alphabet_dict2 = {"y":"a","z":"b",'a':"c",'b':"d",'c':"e",'d':"f","e":"g","f":"h","g":"i","h":"j","i":"k","j":"l","k":"m","l":"n","m":"o",
-				 "n":"p","o":"q", "p": "r","q":"s","r":"t","s":"u","t":"v","u":"w","v":"x","w":"y","x":"z"}
-str_array = my_str.split(' ')
-print(str_array)
-str_array_trans = []
-for i in str_array:
-	s = []
-	for j in i:
-		s.append(alphabet_dict2[j]) if j in alphabet_dict2 else s.append(j)
-	str_array_trans.append(''.join(s))
+# way two
+with open('ocr', 'r') as f:
+    content = f.read()
+    bytes = set(content)  # 用集合 可以迅速地找出构成元素  里面包含换行符
+    stat_dict = {}  # 每个字符串的个数 组成字典
+    for char in content:
+        stat_dict[char] = stat_dict.get(char, 0) + 1
+    stat_dict.pop('\n')  # 需要删除换行符
+    avgOC = len(content)//len(stat_dict)  # 理解什么是 rare
+    result = ''.join([c for c in stat_dict if stat_dict[c] < avgOC])
+    print(result)
 
-print(' '.join(str_array_trans))
-
-#  简单的方法
-from_str = 'abcdefghijklmnopqrstuvwxyz'
-to_str = 'cdefghijklmnopqrstuvwxyzab'
-transform = str.maketrans(from_str,to_str)
-hints = my_str.translate(transform)
-print(hints)
-result = 'map.html'.translate(transform)
-print(result)
-
-
+# way 3
+with open('ocr', 'r') as f:
+    content = f.read()
+    bytes = set(content)  # 用集合 可以迅速地找出构成元素  里面包含换行符
+    stat_dict = {}  # 每个字符串的个数 组成字典
+    for char in bytes:  # 使用count 可以减少 循环次数
+        stat_dict[char] = content.count(char)
+    stat_dict.pop('\n')  # 需要删除换行符
+    avgOC = len(content)//len(stat_dict)  # 理解什么是 rare
+    result = ''.join([c for c in stat_dict if stat_dict[c] < avgOC])
+    print(result)
